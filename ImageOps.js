@@ -11,6 +11,27 @@ function loadImageAsync(uri) {
   });
 }
 
+function drawImageScaled(img, ctx) {
+  var canvas = ctx.canvas;
+  var hRatio = canvas.width / img.width;
+  var vRatio = canvas.height / img.height;
+  var ratio = Math.max(hRatio, vRatio);
+  var centerShift_x = (canvas.width - img.width * ratio) / 2;
+  var centerShift_y = (canvas.height - img.height * ratio) / 2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(
+    img,
+    0,
+    0,
+    img.width,
+    img.height,
+    centerShift_x,
+    centerShift_y,
+    img.width * ratio,
+    img.height * ratio
+  );
+}
+
 export async function createAppIcon({
   color,
   imageUrl,
@@ -29,11 +50,8 @@ export async function createAppIcon({
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   if (imageUrl) {
-    const imageSource = await loadImageAsync(uri);
-    // ctx.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
-
-    // draw image
-    ctx.drawImage(imageSource, 0, 0, size, size);
+    const imageSource = await loadImageAsync(imageUrl);
+    drawImageScaled(imageSource, ctx);
   } else if (emojiId) {
     const emojiUrl = twitterEmoji(emojiId);
     // const emojiPadding = size * 0.125;

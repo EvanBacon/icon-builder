@@ -1,26 +1,85 @@
-import React from "react";
-import { StyleSheet, Button, Image, Text, View } from "react-native";
 import "emoji-mart/css/emoji-mart.css";
 
 import { Picker } from "emoji-mart";
-import { SketchPicker } from "react-color";
 import * as ImagePicker from "expo-image-picker";
-
-import JSZip from "jszip";
 import FileSaver from "file-saver";
+import JSZip from "jszip";
+import React from "react";
+import { SketchPicker } from "react-color";
+import { Button, Image, StyleSheet, View } from "react-native";
+
 import { createAppIcon, twitterEmoji } from "./ImageOps";
 
-const App = () => {
-  const [color, setColor] = React.useState("#ff00ff");
-  const [chosenEmoji, setChosenEmoji] = React.useState("1f914");
+const defaultEmoji = {
+  id: "bacon",
+  name: "Bacon",
+  short_names: ["bacon"],
+  colons: ":bacon:",
+  emoticons: [],
+  unified: "1f953",
+  skin: null,
+  native: "🥓",
+};
+
+export default function App() {
+  const [color, setColor] = React.useState("#4A90E2");
+  const [chosenEmoji, setChosenEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
 
   const onSelect = (data) => {
-    console.log(data);
+    console.log(JSON.stringify(data));
 
-    setChosenEmoji(data.unified);
+    setChosenEmoji(data);
     setImage(null);
   };
+
+  const emojiId = (chosenEmoji || {}).unified;
+
+  async function downloadImageAsync() {
+    const splash = await createAppIcon({
+      color,
+      emojiId: emojiId,
+      imageUrl: image,
+      size: 2048,
+      emojiPadding: 832,
+    });
+
+    const icon = await createAppIcon({
+      color,
+      emojiId: emojiId,
+      imageUrl: image,
+      size: 1024,
+      emojiPadding: 128,
+    });
+    const faviconPng = await createAppIcon({
+      color: "transparent",
+      emojiId: emojiId,
+      imageUrl: image,
+      size: 32,
+      emojiPadding: 0,
+    });
+
+    const iconB64 = icon.substring(icon.indexOf("base64,") + "base64,".length);
+    const splashB64 = splash.substring(
+      splash.indexOf("base64,") + "base64,".length
+    );
+    const faviconB64 = faviconPng.substring(
+      faviconPng.indexOf("base64,") + "base64,".length
+    );
+
+    let zip = new JSZip();
+    // icon 1024x1024 - emoji padding - 128
+    // splash 2048x2048 - emoji padding - 1000 (524 icon)
+    zip.file("icon.png", iconB64, { base64: true });
+    zip.file("splash.png", splashB64, { base64: true });
+    zip.file("favicon.png", faviconB64, { base64: true });
+    const content = await zip.generateAsync({ type: "blob" });
+
+    const folderName = image
+      ? `app-icons-${image.slice(0, 10)}.zip`
+      : `app-icons-${chosenEmoji.id}-${color}.zip`;
+    FileSaver.saveAs(content, folderName);
+  }
 
   return (
     <View style={styles.container}>
@@ -33,58 +92,34 @@ const App = () => {
         />
       </Row>
       <Row style={{ flex: 1 }}>
-        <AppIconImage color={color} emojiId={chosenEmoji} image={image} />
-        {chosenEmoji ? (
-          <Text>You chose: {chosenEmoji}</Text>
-        ) : (
-          <Text>No emoji Chosen</Text>
-        )}
-        <Button
-          title="Download"
-          onPress={async () => {
-            const icon = await createAppIcon({
-              color,
-              emojiId: chosenEmoji,
-              imageUrl: image,
-              size: 1024,
-              emojiPadding: 128,
-            });
-            setImage(icon);
-            return;
-            FileSaver.saveAs(
-              icon,
-              `icon-${new Date().toLocaleTimeString()}.png`
-            );
-            return;
-
-            let zip = new JSZip();
-            // icon 1024x1024 - emoji padding - 128
-            // splash 2048x2048 - emoji padding - 1000 (524 icon)
-            zip.file("icon.png", icon);
-            // zip.file("splash.png", `hello`);
-            // zip.file("favicon.ico", `hello`);
-            const content = await zip.generateAsync({ type: "blob" });
-            FileSaver.saveAs(content, `app-icons.zip`);
-          }}
+        <AppIconImage
+          size={128}
+          color={color}
+          emojiId={emojiId}
+          image={image}
         />
+        <View style={{ padding: 24, flexDirection: "row" }}>
+          <Button title="Download" onPress={downloadImageAsync} />
+
+          <Button
+            title="Upload Image"
+            onPress={async () => {
+              const file = await ImagePicker.launchImageLibraryAsync();
+              console.log(file);
+              if (!file.cancelled) {
+                setImage(file.uri);
+                setChosenEmoji(null);
+              }
+            }}
+          />
+        </View>
       </Row>
       <Row>
         <Picker set="twitter" onSelect={onSelect} />
-        <Button
-          title="Upload Image"
-          onPress={async () => {
-            const file = await ImagePicker.launchImageLibraryAsync();
-            console.log(file);
-            if (!file.cancelled) {
-              setImage(file.uri);
-              setChosenEmoji(undefined);
-            }
-          }}
-        />
       </Row>
     </View>
   );
-};
+}
 
 function Row({ style, ...props }) {
   return (
@@ -98,8 +133,7 @@ function Row({ style, ...props }) {
   );
 }
 
-function AppIconImage({ color, image, emojiId = "1f914" }) {
-  const size = 96;
+function AppIconImage({ color, size, image, emojiId = "1f914" }) {
   const imgSize = size * 0.75;
 
   let imageContents;
@@ -123,6 +157,15 @@ function AppIconImage({ color, image, emojiId = "1f914" }) {
   return (
     <View
       style={{
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
         width: size,
         height: size,
         borderRadius: size * 0.3,
@@ -137,14 +180,10 @@ function AppIconImage({ color, image, emojiId = "1f914" }) {
   );
 }
 
-export default App;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "row",
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
