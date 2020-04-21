@@ -1,7 +1,7 @@
-import * as ImageManipulator from "expo-image-manipulator";
+import FileSaver from "file-saver";
+import JSZip from "jszip";
 
 function loadImageAsync(uri) {
-  console.log(uri);
   return new Promise((resolve, reject) => {
     const imageSource = new Image();
     imageSource.crossOrigin = "anonymous";
@@ -58,8 +58,6 @@ export async function createAppIcon({
     const emojiSize = size - emojiPadding * 2;
     const emojiOffset = (size - emojiSize) / 2;
     const imageSource = await loadImageAsync(emojiUrl);
-
-    console.log(imageSource);
     // draw image
     ctx.drawImage(imageSource, emojiOffset, emojiOffset, emojiSize, emojiSize);
   }
@@ -72,4 +70,60 @@ export async function createAppIcon({
 
 export function twitterEmoji(id) {
   return `https://twemoji.maxcdn.com/v/latest/svg/${id}.svg`;
+}
+
+function imageUriToBase64(imageUri) {
+  return imageUri.substring(imageUri.indexOf("base64,") + "base64,".length);
+}
+
+export async function generateImagesAsync({ emojiId, image, color }) {
+  const splash = await createAppIcon({
+    color,
+    emojiId: emojiId,
+    imageUrl: image,
+    size: 2048,
+    emojiPadding: 832,
+  });
+
+  const icon = await createAppIcon({
+    color,
+    emojiId: emojiId,
+    imageUrl: image,
+    size: 1024,
+    emojiPadding: 128,
+  });
+  const faviconPng = await createAppIcon({
+    color: "transparent",
+    emojiId: emojiId,
+    imageUrl: image,
+    size: 32,
+    emojiPadding: 0,
+  });
+
+  const iconB64 = imageUriToBase64(icon);
+  const splashB64 = imageUriToBase64(splash);
+  const faviconB64 = imageUriToBase64(faviconPng);
+
+  const content = await zipImagesAsync({
+    icon: iconB64,
+    splash: splashB64,
+    favicon: faviconB64,
+  });
+
+  const folderName = image
+    ? `app-icons-${image.slice(0, 10)}.zip`
+    : `app-icons-${chosenEmoji.id}-${color}.zip`;
+
+  FileSaver.saveAs(content, folderName);
+}
+
+async function zipImagesAsync({ icon, splash, favicon }) {
+  const zip = new JSZip();
+  // icon 1024x1024 - emoji padding - 128
+  // splash 2048x2048 - emoji padding - 1000 (524 icon)
+  zip.file("icon.png", icon, { base64: true });
+  zip.file("splash.png", splash, { base64: true });
+  zip.file("favicon.png", favicon, { base64: true });
+  const content = await zip.generateAsync({ type: "blob" });
+  return content;
 }
