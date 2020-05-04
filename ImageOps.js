@@ -112,7 +112,7 @@ export async function generateImagesAsync({ emojiId, image, color }) {
 
   const folderName = image
     ? `app-icons-${image.slice(0, 10)}.zip`
-    : `app-icons-${chosenEmoji.id}-${color}.zip`;
+    : `app-icons-${emojiId}-${color}.zip`;
 
   FileSaver.saveAs(content, folderName);
 }
