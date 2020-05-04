@@ -1,19 +1,11 @@
 import "emoji-mart/css/emoji-mart.css";
 
+import { P } from "@expo/html-elements";
 import { Picker } from "emoji-mart";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import { SketchPicker } from "react-color";
-
-import {
-  Button,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-} from "react-native";
-
-import { P } from "@expo/html-elements";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { generateImagesAsync, twitterEmoji } from "./ImageOps";
 
@@ -28,13 +20,11 @@ const defaultEmoji = {
   native: "🥓",
 };
 
-import { useDimensions } from "react-native-web-hooks";
-
 export default React.forwardRef(({ navigation, theme }, ref) => {
   const [color, setColor] = React.useState("#4A90E2");
   const [chosenEmoji, setChosenEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
-  const emojiId = (chosenEmoji || {}).unified;
+  const emojiId = ((chosenEmoji || {}).unified || "").split("-")[0];
 
   async function uploadImageAsync() {
     const file = await ImagePicker.launchImageLibraryAsync();

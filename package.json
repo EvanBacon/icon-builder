@@ -6,6 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
+    "predeploy": "expo build:web",
+    "deploy": "netlify deploy --dir web-build/ --prod",
     "build:web": "expo build:web"
   },
   "dependencies": {

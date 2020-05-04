@@ -96,7 +96,7 @@ export async function generateImagesAsync({ emojiId, image, color }) {
     color: "transparent",
     emojiId: emojiId,
     imageUrl: image,
-    size: 32,
+    size: 48,
     emojiPadding: 0,
   });
 
