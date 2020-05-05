@@ -31,6 +31,7 @@ const DefaultTheme = {
 
 export default function App({}) {
   const [theme, setTheme] = React.useState(DefaultTheme);
+  const [isDark, setDark] = React.useState(false);
 
   const paperTheme = React.useMemo(() => {
     const t = theme.dark ? PaperDarkTheme : PaperLightTheme;
@@ -83,7 +84,9 @@ export default function App({}) {
                   <DarkModeSwitch
                     value={paperTheme.dark}
                     onChange={() => {
-                      setTheme((t) => (t.dark ? DefaultTheme : PaperDarkTheme));
+                      setDark((isDark) => !isDark);
+
+                      setTheme(isDark ? DefaultTheme : PaperDarkTheme);
                     }}
                   />
                   <Appbar.Action
@@ -98,7 +101,12 @@ export default function App({}) {
             }}
           >
             {({ navigation }) => (
-              <Emoji ref={ref} navigation={navigation} theme={paperTheme} />
+              <Emoji
+                ref={ref}
+                navigation={navigation}
+                isDark={isDark}
+                theme={paperTheme}
+              />
             )}
           </Stack.Screen>
         </Stack.Navigator>

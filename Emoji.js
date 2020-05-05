@@ -4,10 +4,12 @@ import { P } from "@expo/html-elements";
 import { Picker } from "emoji-mart";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
-import { SketchPicker } from "react-color";
+// import { Block } from "react-color";
+import Circle from "react-color/lib/Twitter";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { generateImagesAsync, twitterEmoji } from "./ImageOps";
+import { ScrollView } from "react-native-gesture-handler";
 
 const defaultEmoji = {
   id: "bacon",
@@ -20,7 +22,7 @@ const defaultEmoji = {
   native: "🥓",
 };
 
-export default React.forwardRef(({ navigation, theme }, ref) => {
+export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const [color, setColor] = React.useState("#4A90E2");
   const [chosenEmoji, setChosenEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
@@ -57,17 +59,20 @@ export default React.forwardRef(({ navigation, theme }, ref) => {
 
   return (
     <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={{
+        flexDirection: "row",
+        flex: 1,
+        backgroundColor: theme.colors.background,
+      }}
     >
-      <Row style={{ flex: 1 }}>
-        <SketchPicker
-          color={color}
-          onChangeComplete={({ hex }) => {
-            setColor(hex);
-          }}
-        />
-      </Row>
-      <Row style={{ flex: 1 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <View style={{ alignItems: "center" }}>
           <AppIconImage
             size={128}
@@ -76,14 +81,70 @@ export default React.forwardRef(({ navigation, theme }, ref) => {
             emojiId={emojiId}
             image={image}
           />
-          <P style={{ opacity: 0.6, textAlign: "center" }}>
+          <P
+            style={{
+              opacity: 0.6,
+              color: theme.colors.text,
+              textAlign: "center",
+            }}
+          >
             Touch the icon to use a custom image.
           </P>
+          <Circle
+            triangle="hide"
+            colors={[
+              "#f44336",
+              "#e91e63",
+              "#EB144C",
+              "#9900EF",
+              "#9c27b0",
+              "#673ab7",
+              "#3f51b5",
+              "#2196f3",
+              "#03a9f4",
+              "#00bcd4",
+              "#009688",
+              "#4caf50",
+              "#8bc34a",
+              "#7BDCB5",
+              "#00D084",
+              "#ffeb3b",
+              "#ffc107",
+              "#ff9800",
+              "#ff5722",
+
+              "#607d8b",
+              "#999",
+              "#ABB8C3",
+              "black",
+              "#fff",
+            ]}
+            color={color}
+            onChangeComplete={({ hex }) => {
+              setColor(hex);
+            }}
+          />
         </View>
-      </Row>
-      <Row>
-        <Picker set="twitter" onSelect={onSelect} />
-      </Row>
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Picker
+          theme={isDark ? "dark" : "light"}
+          set="twitter"
+          notFoundEmoji="mag"
+          color={isDark ? "white" : "#4630eb"}
+          title="By Evan Bacon"
+          emoji="bacon"
+          onSelect={onSelect}
+          showSkinTones={false}
+        />
+      </View>
     </View>
   );
 });
@@ -152,7 +213,6 @@ function AppIconImage({ color, size, image, emojiId = "1f914", onPress }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
     backgroundColor: "#fff",
   },
 });
