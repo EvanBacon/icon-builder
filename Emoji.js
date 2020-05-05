@@ -7,23 +7,78 @@ import React from "react";
 // import { Block } from "react-color";
 import Circle from "react-color/lib/Twitter";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { generateImagesAsync, twitterEmoji } from "./ImageOps";
-import { ScrollView } from "react-native-gesture-handler";
 
-const defaultEmoji = {
-  id: "bacon",
-  name: "Bacon",
-  short_names: ["bacon"],
-  colons: ":bacon:",
-  emoticons: [],
-  unified: "1f953",
-  skin: null,
-  native: "🥓",
-};
+const defaultEmojis = [
+  {
+    id: "bacon",
+    unified: "1f953",
+  },
+  { id: "avocado", unified: "1f951" },
+  { id: "beers", unified: "1f37b" },
+  { id: "microbe", unified: "1f9a0" },
+  {
+    id: "i_love_you_hand_sign",
+    unified: "1f91f",
+  },
+  {
+    id: "mechanical_arm",
+    unified: "1f9be",
+  },
+  {
+    id: "revolving_hearts",
 
+    unified: "1f49e",
+  },
+  {
+    id: "thought_balloon",
+    unified: "1f4ad",
+  },
+  {
+    id: "dog",
+    unified: "1f436",
+  },
+];
+
+const defaultColors = [
+  "#f44336",
+  "#e91e63",
+  "#EB144C",
+  "#9900EF",
+  "#9c27b0",
+  "#673ab7",
+  "#3f51b5",
+  "#2196f3",
+  "#03a9f4",
+  "#00bcd4",
+  "#009688",
+  "#4caf50",
+  "#8bc34a",
+  "#7BDCB5",
+  "#00D084",
+  "#ffeb3b",
+  "#ffc107",
+  "#ff9800",
+  "#ff5722",
+
+  "#607d8b",
+  "#999",
+  "#ABB8C3",
+  "black",
+  "#fff",
+];
+
+const randomEmoji = () =>
+  defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
+const randomColor = () =>
+  defaultColors[Math.floor(Math.random() * defaultColors.length)];
+
+const defaultEmoji = randomEmoji();
+const defaultColor = "#fff";
 export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
-  const [color, setColor] = React.useState("#4A90E2");
+  const [color, setColor] = React.useState(defaultColor);
   const [chosenEmoji, setChosenEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
   const emojiId = ((chosenEmoji || {}).unified || "").split("-")[0];
@@ -50,7 +105,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   );
 
   const onSelect = (data) => {
-    console.log("Picked Emoji: ", data);
+    console.log("Emoji: ", data);
     navigation.setParams({ emoji: data.unified });
 
     setChosenEmoji(data);
@@ -74,6 +129,20 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
         }}
       >
         <View style={{ alignItems: "center" }}>
+          <View style={{ marginBottom: 8, opacity: 0.8 }}>
+            <FontAwesome.Button
+              name="refresh"
+              backgroundColor="transparent"
+              underlayColor={theme.colors.header}
+              color={theme.colors.text}
+              onPress={() => {
+                setColor(randomColor());
+                setChosenEmoji(randomEmoji());
+              }}
+            >
+              Random
+            </FontAwesome.Button>
+          </View>
           <AppIconImage
             size={128}
             onPress={uploadImageAsync}
@@ -92,33 +161,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
           </P>
           <Circle
             triangle="hide"
-            colors={[
-              "#f44336",
-              "#e91e63",
-              "#EB144C",
-              "#9900EF",
-              "#9c27b0",
-              "#673ab7",
-              "#3f51b5",
-              "#2196f3",
-              "#03a9f4",
-              "#00bcd4",
-              "#009688",
-              "#4caf50",
-              "#8bc34a",
-              "#7BDCB5",
-              "#00D084",
-              "#ffeb3b",
-              "#ffc107",
-              "#ff9800",
-              "#ff5722",
-
-              "#607d8b",
-              "#999",
-              "#ABB8C3",
-              "black",
-              "#fff",
-            ]}
+            colors={defaultColors}
             color={color}
             onChangeComplete={({ hex }) => {
               setColor(hex);
@@ -149,19 +192,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   );
 });
 
-function Row({ style, ...props }) {
-  return (
-    <View
-      style={[
-        { flex: 1, alignItems: "center", justifyContent: "center" },
-        style,
-      ]}
-      {...props}
-    />
-  );
-}
-
-function AppIconImage({ color, size, image, emojiId = "1f914", onPress }) {
+function AppIconImage({ color, size, image, emojiId, onPress }) {
   const imgSize = size * 0.75;
 
   let imageContents;
