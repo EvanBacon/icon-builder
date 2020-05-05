@@ -62,7 +62,6 @@ const defaultColors = [
   "#ffc107",
   "#ff9800",
   "#ff5722",
-
   "#607d8b",
   "#999",
   "#ABB8C3",
@@ -77,9 +76,10 @@ const randomColor = () =>
 
 const defaultEmoji = randomEmoji();
 const defaultColor = "#fff";
+
 export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const [color, setColor] = React.useState(defaultColor);
-  const [chosenEmoji, setChosenEmoji] = React.useState(defaultEmoji);
+  const [chosenEmoji, setEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
   const emojiId = ((chosenEmoji || {}).unified || "").split("-")[0];
 
@@ -87,7 +87,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
     const file = await ImagePicker.launchImageLibraryAsync();
     if (!file.cancelled) {
       setImage(file.uri);
-      setChosenEmoji(null);
+      setEmoji(null);
     }
   }
 
@@ -108,7 +108,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
     console.log("Emoji: ", data);
     navigation.setParams({ emoji: data.unified });
 
-    setChosenEmoji(data);
+    setEmoji(data);
     setImage(null);
   };
 
@@ -137,7 +137,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
               color={theme.colors.text}
               onPress={() => {
                 setColor(randomColor());
-                setChosenEmoji(randomEmoji());
+                setEmoji(randomEmoji());
               }}
             >
               Random

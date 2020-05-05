@@ -64,6 +64,11 @@ export default function App({}) {
           <Stack.Screen
             name="Home"
             options={{
+              path: ":emoji/:color",
+              parse: {
+                emoji: String,
+                color: String,
+              },
               headerTintColor: paperTheme.colors.text,
               headerStyle: {
                 backgroundColor: paperTheme.colors.header,
