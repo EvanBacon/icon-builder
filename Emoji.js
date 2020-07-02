@@ -39,6 +39,14 @@ const defaultEmojis = [
     id: "dog",
     unified: "1f436",
   },
+  {
+    id: "thermometer",
+    unified: "1f321-fe0f",
+  },
+  {
+    id: "fire",
+    unified: "1f525",
+  },
 ];
 
 const defaultColors = [
@@ -76,14 +84,63 @@ const randomColor = () =>
 const defaultEmoji = randomEmoji();
 const defaultColor = "#fff";
 
+const mapping = {
+  copyright: "a9",
+  registered: "ae",
+  trademark: "2122",
+  waving_white_flag: "1f3f3",
+};
+function transformId(id = "", name = "") {
+  if (name in mapping) {
+    return mapping[name];
+  }
+
+  if (!id.includes("-")) return id;
+
+  if (
+    // blacklist
+    !["man_in_business_suit_levitating"].includes(name) &&
+    (name.startsWith("flag-") ||
+      name.startsWith("man-") ||
+      name.startsWith("woman-") ||
+      name.startsWith("man_") ||
+      name.startsWith("woman_") ||
+      name.startsWith("male_") ||
+      name.startsWith("female_") ||
+      name.startsWith("male-") ||
+      name.startsWith("female-") ||
+      name.endsWith("_man") ||
+      name.endsWith("_woman") ||
+      name.endsWith("-flag") ||
+      name.endsWith("_flag") ||
+      // whitelist
+      [
+        "merman",
+        "mermaid",
+        "es",
+        "cn",
+        "de",
+        "gb",
+        "us",
+        "ru",
+        "kr",
+        "jp",
+        "it",
+        "fr",
+        "people_holding_hands",
+      ].includes(name))
+  ) {
+    return id;
+  }
+
+  return id.split("-")[0] || "";
+}
+
 export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const [color, setColor] = React.useState(defaultColor);
   const [chosenEmoji = {}, setEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
-  let emojiId = chosenEmoji.unified || "";
-  if (!chosenEmoji.id.startsWith("flag-")) {
-    emojiId = chosenEmoji.unified.split("-")[0] || "";
-  }
+  let emojiId = transformId(chosenEmoji.unified, chosenEmoji.id);
 
   async function uploadImageAsync() {
     const file = await ImagePicker.launchImageLibraryAsync();

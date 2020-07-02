@@ -15,7 +15,6 @@
     "@react-navigation/native": "^5.1.6",
     "@react-navigation/stack": "^5.2.11",
     "emoji-mart": "^3.0.0",
-    "emoji-picker-react": "^3.1.4",
     "expo": "~37.0.3",
     "expo-dark-mode-switch": "^0.0.1",
     "expo-image-manipulator": "^8.1.0",
