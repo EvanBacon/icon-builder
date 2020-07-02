@@ -4,7 +4,6 @@ import { P } from "@expo/html-elements";
 import { Picker } from "emoji-mart";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
-// import { Block } from "react-color";
 import Circle from "react-color/lib/Twitter";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
@@ -79,9 +78,12 @@ const defaultColor = "#fff";
 
 export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const [color, setColor] = React.useState(defaultColor);
-  const [chosenEmoji, setEmoji] = React.useState(defaultEmoji);
+  const [chosenEmoji = {}, setEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
-  const emojiId = ((chosenEmoji || {}).unified || "").split("-")[0];
+  let emojiId = chosenEmoji.unified || "";
+  if (!chosenEmoji.id.startsWith("flag-")) {
+    emojiId = chosenEmoji.unified.split("-")[0] || "";
+  }
 
   async function uploadImageAsync() {
     const file = await ImagePicker.launchImageLibraryAsync();

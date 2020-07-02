@@ -1,6 +1,6 @@
 export default {
-  name: "Icon Builder",
-  primaryColor: "#50E3C2",
+  name: "Make Icon",
+  primaryColor: "#fff",
   orientation: "portrait",
   icon: "./assets/icon.png",
   splash: {

@@ -3,19 +3,19 @@ import {
   createStackNavigator,
   HeaderStyleInterpolators,
 } from "@react-navigation/stack";
-import React from "react";
-import {
-  Provider as PaperProvider,
-  DefaultTheme as PaperLightTheme,
-  DarkTheme as PaperDarkTheme,
-  Appbar,
-  List,
-  Divider,
-} from "react-native-paper";
-import { View } from "react-native";
-
 import DarkModeSwitch from "expo-dark-mode-switch";
+import * as Linking from "expo-linking";
+import React from "react";
+import { View } from "react-native";
+import {
+  Appbar,
+  DarkTheme as PaperDarkTheme,
+  DefaultTheme as PaperLightTheme,
+  Provider as PaperProvider,
+} from "react-native-paper";
+
 import Emoji from "./Emoji";
+
 const Stack = createStackNavigator();
 
 const DefaultTheme = {
@@ -53,8 +53,19 @@ export default function App({}) {
 
   const ref = React.useRef(null);
 
+  const linking = {
+    prefixes: [Linking.makeUrl("/")],
+    config: {
+      Root: {
+        path: "",
+        initialRouteName: "Home",
+        screens: { Home: "" },
+      },
+    },
+  };
+
   return (
-    <PaperProvider theme={paperTheme}>
+    <PaperProvider theme={paperTheme} linking={linking}>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -64,11 +75,6 @@ export default function App({}) {
           <Stack.Screen
             name="Home"
             options={{
-              path: ":emoji/:color",
-              parse: {
-                emoji: String,
-                color: String,
-              },
               headerTintColor: paperTheme.colors.text,
               headerStyle: {
                 backgroundColor: paperTheme.colors.header,

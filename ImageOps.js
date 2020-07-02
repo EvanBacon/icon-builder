@@ -67,7 +67,6 @@ export async function createAppIcon({
 }
 
 // twemoji.maxcdn.com
-
 export function twitterEmoji(id) {
   return `https://twemoji.maxcdn.com/v/latest/svg/${id}.svg`;
 }
