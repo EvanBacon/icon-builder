@@ -1,12 +1,12 @@
 import "emoji-mart/css/emoji-mart.css";
 
 import { P } from "@expo/html-elements";
+import { FontAwesome } from "@expo/vector-icons";
 import { Picker } from "emoji-mart";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import Circle from "react-color/lib/Twitter";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
 
 import { generateImagesAsync, twitterEmoji } from "./ImageOps";
 
@@ -84,13 +84,13 @@ const randomColor = () =>
 const defaultEmoji = randomEmoji();
 const defaultColor = "#fff";
 
-const mapping = {
+const mapping: Record<string, string> = {
   copyright: "a9",
   registered: "ae",
   trademark: "2122",
   waving_white_flag: "1f3f3",
 };
-function transformId(id = "", name = "") {
+function transformId(id = "", name = ""): string {
   if (name in mapping) {
     return mapping[name];
   }
@@ -165,7 +165,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
 
   const onSelect = (data) => {
     console.log("Emoji: ", data);
-    navigation.setParams({ emoji: data.unified });
+    // navigation.setParams({ emoji: data.unified });
 
     setEmoji(data);
     setImage(null);
