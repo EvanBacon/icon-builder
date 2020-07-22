@@ -7,7 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import React from "react";
 import Circle from "react-color/lib/Twitter";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-
+import { Button } from "react-native-paper";
 import { generateImagesAsync, twitterEmoji } from "./ImageOps";
 
 const defaultEmojis = [
@@ -91,7 +91,7 @@ const mapping: Record<string, string> = {
   waving_white_flag: "1f3f3",
 };
 function transformId(id = "", name = ""): string {
-  if(!id || !name) return;
+  if (!id || !name) return;
   if (name in mapping) {
     return mapping[name];
   }
@@ -141,7 +141,8 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const [color, setColor] = React.useState(defaultColor);
   const [chosenEmoji = {}, setEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
-  const chosenUnified = chosenEmoji && chosenEmoji.unified ? chosenEmoji.unified : null;
+  const chosenUnified =
+    chosenEmoji && chosenEmoji.unified ? chosenEmoji.unified : null;
   const chosenId = chosenEmoji && chosenEmoji.id ? chosenEmoji.id : null;
   let emojiId = transformId(chosenUnified, chosenId);
 
@@ -221,12 +222,20 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
           >
             Touch the icon to use a custom image.
           </P>
+
           <Circle
             triangle="hide"
             colors={defaultColors}
             color={color}
             onChangeComplete={({ hex }) => {
               setColor(hex);
+            }}
+          />
+
+          <DownloadButton
+            style={{ marginTop: 12 }}
+            onPress={() => {
+              generateImagesAsync({ emojiId, image, color });
             }}
           />
         </View>
@@ -253,6 +262,20 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
     </View>
   );
 });
+
+function DownloadButton(props: React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      {...props}
+      mode="outlined"
+      uppercase={false}
+      color={"#000000"}
+      icon="download"
+    >
+      Download Icon
+    </Button>
+  );
+}
 
 function AppIconImage({ color, size, image, emojiId, onPress }) {
   const imgSize = size * 0.75;

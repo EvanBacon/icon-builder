@@ -9,10 +9,12 @@ import React from "react";
 import { View } from "react-native";
 import {
   Appbar,
+  Button,
   DarkTheme as PaperDarkTheme,
   DefaultTheme as PaperLightTheme,
   Provider as PaperProvider,
 } from "react-native-paper";
+import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 
 import Emoji from "./Emoji";
 
@@ -80,15 +82,27 @@ export default function App({}) {
                 backgroundColor: paperTheme.colors.header,
                 borderBottomColor: paperTheme.colors.headerBorder,
               },
-              title: "Icon Builder",
+              title: "",
               headerLeft: () => (
-                <Appbar.Action
+                <Button
+                  style={{ marginLeft: 8 }}
                   color={paperTheme.colors.text}
-                  icon="download"
                   onPress={() => {
                     ref.current.saveAsync();
                   }}
-                />
+                  uppercase
+                  labelStyle={{ userSelect: "none" }}
+                  icon={() => (
+                    <MaterialIcons
+                      style={{ userSelect: "none" }}
+                      name="file-download"
+                      color={paperTheme.colors.text}
+                      size={24}
+                    />
+                  )}
+                >
+                  Download Icon
+                </Button>
               ),
               headerRight: () => (
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
