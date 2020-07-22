@@ -233,6 +233,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
           />
 
           <DownloadButton
+            color={theme.colors.text}
             style={{ marginTop: 12 }}
             onPress={() => {
               generateImagesAsync({ emojiId, image, color });
@@ -265,13 +266,7 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
 
 function DownloadButton(props: React.ComponentProps<typeof Button>) {
   return (
-    <Button
-      {...props}
-      mode="outlined"
-      uppercase={false}
-      color={"#000000"}
-      icon="download"
-    >
+    <Button {...props} mode="outlined" uppercase={false} icon="download">
       Download Icon
     </Button>
   );
