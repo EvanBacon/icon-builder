@@ -91,6 +91,7 @@ const mapping: Record<string, string> = {
   waving_white_flag: "1f3f3",
 };
 function transformId(id = "", name = ""): string {
+  if(!id || !name) return;
   if (name in mapping) {
     return mapping[name];
   }
@@ -140,7 +141,9 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const [color, setColor] = React.useState(defaultColor);
   const [chosenEmoji = {}, setEmoji] = React.useState(defaultEmoji);
   const [image, setImage] = React.useState(null);
-  let emojiId = transformId(chosenEmoji.unified, chosenEmoji.id);
+  const chosenUnified = chosenEmoji && chosenEmoji.unified ? chosenEmoji.unified : null;
+  const chosenId = chosenEmoji && chosenEmoji.id ? chosenEmoji.id : null;
+  let emojiId = transformId(chosenUnified, chosenId);
 
   async function uploadImageAsync() {
     const file = await ImagePicker.launchImageLibraryAsync();
