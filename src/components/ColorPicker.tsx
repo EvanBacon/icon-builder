@@ -43,11 +43,6 @@ export const getContrastingColor = (data) => {
   return yiq >= 128 ? "#000" : "#fff";
 };
 
-export const isvalidColorString = (string, type) => {
-  const stringWithoutDegree = string.replace("°", "");
-  return tinycolor(`${type} (${stringWithoutDegree})`)._ok;
-};
-
 export const isValidHex = (hex) => {
   if (hex === "transparent") {
     return true;
@@ -222,7 +217,7 @@ const defaultColors = [
   "#999",
   "#ABB8C3",
   "black",
-  "#fff",
+  "white",
 ];
 
 export const randomColor = () =>

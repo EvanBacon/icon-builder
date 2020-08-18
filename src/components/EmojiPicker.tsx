@@ -42,10 +42,18 @@ const defaultEmojis = [
     id: "fire",
     unified: "1f525",
   },
+  {
+    id: "compass",
+    unified: "1f9ed",
+  },
+  {
+    id: "rolled_up_newspaper",
+    unified: "1f5de-fe0f",
+  },
 ];
 
-export const randomEmoji = () =>
-  defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
+export const randomEmoji = (): EmojiData =>
+  defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)] as any;
 
 const mapping: Record<string, string> = {
   copyright: "a9",
@@ -125,10 +133,3 @@ export function EmojiPicker({
     />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});

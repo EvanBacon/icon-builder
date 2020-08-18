@@ -107,7 +107,9 @@ export default function App({}) {
             ),
           }}
         >
-          {() => <CreateScreen ref={ref} />}
+          {({ route, navigation }) => (
+            <CreateScreen ref={ref} route={route} navigation={navigation} />
+          )}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
