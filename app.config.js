@@ -1,5 +1,5 @@
 export default {
-  name: "Make Icon",
+  name: "Expo Icon Builder",
   primaryColor: "#fff",
   orientation: "portrait",
   icon: "./assets/icon.png",

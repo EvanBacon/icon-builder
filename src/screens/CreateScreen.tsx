@@ -1,4 +1,4 @@
-import { P } from "@expo/html-elements";
+import { P, Footer, H3, A, Section, Main } from "@expo/html-elements";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -158,32 +158,52 @@ export default React.forwardRef(
     );
 
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: theme.colors.background,
-          paddingVertical: isMobile ? 18 : 0,
-          flexDirection: isMobile ? "column" : "row",
-        }}
-      >
-        <View
-          style={[
-            styles.rowItem,
-            {
-              paddingVertical: isMobile ? 18 : 0,
-            },
-          ]}
+      <View style={{ flex: 1 }}>
+        <Main
+          style={{
+            flex: 1,
+            backgroundColor: theme.colors.background,
+            paddingVertical: isMobile ? 18 : 0,
+            flexDirection: isMobile ? "column" : "row",
+          }}
         >
-          {renderAppIcon()}
-          <ColorPicker
-            onValueChanged={(hex) => {
-              setColorAndUpdateURL(hex);
+          <Section
+            style={[
+              styles.rowItem,
+              {
+                paddingVertical: isMobile ? 18 : 0,
+              },
+            ]}
+          >
+            {renderAppIcon()}
+            <ColorPicker
+              onValueChanged={(hex) => {
+                setColorAndUpdateURL(hex);
+              }}
+            />
+          </Section>
+          <Section style={styles.rowItem}>
+            <EmojiPicker isMobile={isMobile} onSelect={setEmojiAndUpdateURL} />
+          </Section>
+        </Main>
+        <Footer style={{ justifyContent: "center", alignItems: "center" }}>
+          <H3
+            style={{
+              fontSize: 14,
+              paddingBottom: isMobile ? 18 : 0,
+              color: theme.dark ? "#ABB8C3" : "#607d8b",
             }}
-          />
-        </View>
-        <View style={styles.rowItem}>
-          <EmojiPicker isMobile={isMobile} onSelect={setEmojiAndUpdateURL} />
-        </View>
+          >
+            Made with{" "}
+            <A
+              style={{ color: theme.dark ? "white" : "black" }}
+              target="_blank"
+              href="http://expo.io/"
+            >
+              Expo
+            </A>
+          </H3>
+        </Footer>
       </View>
     );
   }
