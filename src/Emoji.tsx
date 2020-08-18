@@ -2,12 +2,14 @@ import "emoji-mart/css/emoji-mart.css";
 
 import { P } from "@expo/html-elements";
 import { FontAwesome } from "@expo/vector-icons";
-import { Picker } from "emoji-mart";
 import * as ImagePicker from "expo-image-picker";
 import React from "react";
-import Circle from "react-color/lib/Twitter";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Button } from "react-native-paper";
+
+import { ColorPicker, randomColor } from "./components/ColorPicker";
+import { Picker } from "emoji-mart";
+import useWindowDimensions from "./hooks/useWindowDimensions";
 import { generateImagesAsync, twitterEmoji } from "./ImageOps";
 
 const defaultEmojis = [
@@ -49,37 +51,8 @@ const defaultEmojis = [
   },
 ];
 
-const defaultColors = [
-  "#f44336",
-  "#e91e63",
-  "#EB144C",
-  "#9900EF",
-  "#9c27b0",
-  "#673ab7",
-  "#3f51b5",
-  "#2196f3",
-  "#03a9f4",
-  "#00bcd4",
-  "#009688",
-  "#4caf50",
-  "#8bc34a",
-  "#7BDCB5",
-  "#00D084",
-  "#ffeb3b",
-  "#ffc107",
-  "#ff9800",
-  "#ff5722",
-  "#607d8b",
-  "#999",
-  "#ABB8C3",
-  "black",
-  "#fff",
-];
-
 const randomEmoji = () =>
   defaultEmojis[Math.floor(Math.random() * defaultEmojis.length)];
-const randomColor = () =>
-  defaultColors[Math.floor(Math.random() * defaultColors.length)];
 
 const defaultEmoji = randomEmoji();
 const defaultColor = "#fff";
@@ -146,6 +119,10 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
   const chosenId = chosenEmoji && chosenEmoji.id ? chosenEmoji.id : null;
   let emojiId = transformId(chosenUnified, chosenId);
 
+  const { width } = useWindowDimensions();
+
+  const isMobile = width < 640;
+
   async function uploadImageAsync() {
     const file = await ImagePicker.launchImageLibraryAsync();
     if (!file.cancelled) {
@@ -175,90 +152,105 @@ export default React.forwardRef(({ navigation, theme, isDark }, ref) => {
     setImage(null);
   };
 
+  const renderAppIcon = () => (
+    <>
+      <AppIconImage
+        size={128}
+        onPress={uploadImageAsync}
+        color={color}
+        emojiId={emojiId}
+        image={image}
+      />
+      <View style={{ marginTop: 8, opacity: 0.8 }}>
+        <FontAwesome.Button
+          name="refresh"
+          backgroundColor="transparent"
+          underlayColor={theme.colors.header}
+          color={theme.colors.text}
+          onPress={() => {
+            setColor(randomColor());
+            setEmoji(randomEmoji());
+          }}
+        >
+          Random
+        </FontAwesome.Button>
+      </View>
+      {false && (
+        <P
+          style={{
+            opacity: 0.6,
+            color: theme.colors.text,
+            textAlign: "center",
+          }}
+        >
+          Touch the icon to use a custom image.
+        </P>
+      )}
+    </>
+  );
+
+  const renderDownloadButton = () => (
+    <DownloadButton
+      color={theme.colors.text}
+      style={{ marginTop: 12 }}
+      onPress={() => {
+        generateImagesAsync({ emojiId, image, color });
+      }}
+    />
+  );
+
   return (
     <View
       style={{
-        flexDirection: "row",
         flex: 1,
         backgroundColor: theme.colors.background,
+        paddingVertical: isMobile ? 18 : 0,
       }}
     >
       <View
         style={{
-          flexDirection: "row",
+          flexDirection: isMobile ? "column" : "row",
           flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
-        <View style={{ alignItems: "center" }}>
-          <View style={{ marginBottom: 8, opacity: 0.8 }}>
-            <FontAwesome.Button
-              name="refresh"
-              backgroundColor="transparent"
-              underlayColor={theme.colors.header}
-              color={theme.colors.text}
-              onPress={() => {
-                setColor(randomColor());
-                setEmoji(randomEmoji());
-              }}
-            >
-              Random
-            </FontAwesome.Button>
-          </View>
-          <AppIconImage
-            size={128}
-            onPress={uploadImageAsync}
-            color={color}
-            emojiId={emojiId}
-            image={image}
-          />
-          <P
-            style={{
-              opacity: 0.6,
-              color: theme.colors.text,
-              textAlign: "center",
-            }}
+        <View
+          style={{
+            flex: 1,
+            paddingVertical: isMobile ? 18 : 0,
+          }}
+        >
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
-            Touch the icon to use a custom image.
-          </P>
-
-          <Circle
-            triangle="hide"
-            colors={defaultColors}
-            color={color}
-            onChangeComplete={({ hex }) => {
-              setColor(hex);
-            }}
-          />
-
-          <DownloadButton
-            color={theme.colors.text}
-            style={{ marginTop: 12 }}
-            onPress={() => {
-              generateImagesAsync({ emojiId, image, color });
-            }}
+            {renderAppIcon()}
+            <ColorPicker
+              isDark={isDark}
+              isMobile={false}
+              onValueChanged={(hex) => setColor(hex)}
+            />
+          </View>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Picker
+            style={isMobile ? { flex: 1, borderRadius: 0 } : {}}
+            theme={isDark ? "dark" : "light"}
+            set="twitter"
+            notFoundEmoji="mag"
+            color={isDark ? "white" : "#4630eb"}
+            title=""
+            showPreview={false}
+            emoji="bacon"
+            onSelect={onSelect}
+            showSkinTones={false}
           />
         </View>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Picker
-          theme={isDark ? "dark" : "light"}
-          set="twitter"
-          notFoundEmoji="mag"
-          color={isDark ? "white" : "#4630eb"}
-          title="By Evan Bacon"
-          emoji="bacon"
-          onSelect={onSelect}
-          showSkinTones={false}
-        />
       </View>
     </View>
   );
