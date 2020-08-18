@@ -1,7 +1,7 @@
 import FileSaver from "file-saver";
 import JSZip from "jszip";
 
-function loadImageAsync(uri) {
+function loadImageAsync(uri: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const imageSource = new Image();
     imageSource.crossOrigin = "anonymous";
@@ -11,7 +11,7 @@ function loadImageAsync(uri) {
   });
 }
 
-function drawImageScaled(img, ctx) {
+function drawImageScaled(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
   var canvas = ctx.canvas;
   var hRatio = canvas.width / img.width;
   var vRatio = canvas.height / img.height;
@@ -38,12 +38,18 @@ export async function createAppIcon({
   emojiId,
   size,
   emojiPadding,
-}) {
+}: {
+  color: string;
+  imageUrl?: string;
+  emojiId?: string;
+  size: number;
+  emojiPadding: number;
+}): Promise<string> {
   let canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
 
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d")!;
 
   // draw color
   ctx.fillStyle = color;
@@ -67,15 +73,23 @@ export async function createAppIcon({
 }
 
 // twemoji.maxcdn.com
-export function twitterEmoji(id) {
+export function twitterEmoji(id: string): string {
   return `https://twemoji.maxcdn.com/v/latest/svg/${id}.svg`;
 }
 
-function imageUriToBase64(imageUri) {
+function imageUriToBase64(imageUri: string): string {
   return imageUri.substring(imageUri.indexOf("base64,") + "base64,".length);
 }
 
-export async function generateImagesAsync({ emojiId, image, color }) {
+export async function generateImagesAsync({
+  emojiId,
+  image,
+  color,
+}: {
+  emojiId?: string;
+  image?: string;
+  color: string;
+}): Promise<void> {
   const splash = await createAppIcon({
     color,
     emojiId: emojiId,
@@ -116,7 +130,15 @@ export async function generateImagesAsync({ emojiId, image, color }) {
   FileSaver.saveAs(content, folderName);
 }
 
-async function zipImagesAsync({ icon, splash, favicon }) {
+async function zipImagesAsync({
+  icon,
+  splash,
+  favicon,
+}: {
+  icon: string;
+  splash: string;
+  favicon: string;
+}) {
   const zip = new JSZip();
   // icon 1024x1024 - emoji padding - 128
   // splash 2048x2048 - emoji padding - 1000 (524 icon)

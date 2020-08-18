@@ -1,4 +1,10 @@
-import { NavigationContainer } from "@react-navigation/native";
+import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+  Theme,
+} from "@react-navigation/native";
 import {
   createStackNavigator,
   HeaderStyleInterpolators,
@@ -7,135 +13,103 @@ import DarkModeSwitch from "expo-dark-mode-switch";
 import * as Linking from "expo-linking";
 import React from "react";
 import { View } from "react-native";
-import {
-  Appbar,
-  Button,
-  DarkTheme as PaperDarkTheme,
-  DefaultTheme as PaperLightTheme,
-  Provider as PaperProvider,
-} from "react-native-paper";
-import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
+import { Appbar, Button } from "react-native-paper";
 
-import Emoji from "./Emoji";
+import CreateScreen from "./screens/CreateScreen";
 
 const Stack = createStackNavigator();
 
-const DefaultTheme = {
-  dark: false,
+const linking = {
+  prefixes: [Linking.makeUrl("/")],
+  config: {
+    screens: {
+      Home: {
+        path: "",
+      },
+    },
+  },
+};
+
+const CustomLightTheme: Theme = {
+  ...DefaultTheme,
   colors: {
-    primary: "rgb(0, 122, 255)",
-    background: "rgb(242, 242, 242)",
-    card: "rgb(255, 255, 255)",
-    text: "rgb(28, 28, 30)",
-    border: "rgb(224, 224, 224)",
+    ...DefaultTheme.colors,
+    accent: "rgb(255, 45, 85)",
+    header: "white",
+    headerBorder: "rgb(224,224,224)",
+  },
+};
+const CustomDarkTheme: Theme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    accent: "rgb(255, 55, 95)",
+    header: "#000",
+    headerBorder: "rgba(224,224,224, 0.3)",
   },
 };
 
 export default function App({}) {
-  const [theme, setTheme] = React.useState(DefaultTheme);
-  const [isDark, setDark] = React.useState(false);
-
-  const paperTheme = React.useMemo(() => {
-    const t = theme.dark ? PaperDarkTheme : PaperLightTheme;
-
-    return {
-      ...t,
-      colors: {
-        ...t.colors,
-        ...theme.colors,
-        surface: theme.colors.card,
-        accent: theme.dark ? "rgb(255, 55, 95)" : "rgb(255, 45, 85)",
-        header: theme.dark ? "#000" : "white",
-        headerBorder: theme.dark
-          ? "rgba(224,224,224, 0.3)"
-          : "rgb(224,224,224)",
-      },
-    };
-  }, [theme.colors, theme.dark]);
-
+  const [theme, setTheme] = React.useState(CustomLightTheme);
   const ref = React.useRef(null);
 
-  const linking = {
-    prefixes: [Linking.makeUrl("/")],
-    config: {
-      Root: {
-        path: "",
-        initialRouteName: "Home",
-        screens: { Home: "" },
-      },
-    },
-  };
-
   return (
-    <PaperProvider theme={paperTheme} linking={linking}>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
+    <NavigationContainer theme={theme} linking={linking}>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
+        }}
+      >
+        <Stack.Screen
+          name="Home"
+          options={{
+            headerTintColor: theme.colors.text,
+            headerStyle: {
+              backgroundColor: theme.colors.background,
+              borderBottomColor: theme.colors.headerBorder,
+            },
+            title: "",
+            headerLeft: () => (
+              <Button
+                style={{ marginLeft: 8 }}
+                color={theme.colors.text}
+                onPress={() => ref.current.saveAsync()}
+                uppercase
+                labelStyle={{ userSelect: "none" }}
+                icon={() => (
+                  <MaterialIcons
+                    style={{ userSelect: "none" }}
+                    name="file-download"
+                    color={theme.colors.text}
+                    size={24}
+                  />
+                )}
+              >
+                Download Icon
+              </Button>
+            ),
+            headerRight: () => (
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <DarkModeSwitch
+                  value={theme.dark}
+                  onChange={() => {
+                    setTheme((theme) =>
+                      theme.dark ? CustomLightTheme : CustomDarkTheme
+                    );
+                  }}
+                />
+                <Appbar.Action
+                  color={theme.colors.text}
+                  icon="upload"
+                  onPress={() => ref.current?.uploadAsync?.()}
+                />
+              </View>
+            ),
           }}
         >
-          <Stack.Screen
-            name="Home"
-            options={{
-              headerTintColor: paperTheme.colors.text,
-              headerStyle: {
-                backgroundColor: paperTheme.colors.header,
-                borderBottomColor: paperTheme.colors.headerBorder,
-              },
-              title: "",
-              headerLeft: () => (
-                <Button
-                  style={{ marginLeft: 8 }}
-                  color={paperTheme.colors.text}
-                  onPress={() => {
-                    ref.current.saveAsync();
-                  }}
-                  uppercase
-                  labelStyle={{ userSelect: "none" }}
-                  icon={() => (
-                    <MaterialIcons
-                      style={{ userSelect: "none" }}
-                      name="file-download"
-                      color={paperTheme.colors.text}
-                      size={24}
-                    />
-                  )}
-                >
-                  Download Icon
-                </Button>
-              ),
-              headerRight: () => (
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <DarkModeSwitch
-                    value={paperTheme.dark}
-                    onChange={() => {
-                      setDark((isDark) => !isDark);
-
-                      setTheme(isDark ? DefaultTheme : PaperDarkTheme);
-                    }}
-                  />
-                  <Appbar.Action
-                    color={paperTheme.colors.text}
-                    icon="upload"
-                    onPress={() => {
-                      ref.current.uploadAsync();
-                    }}
-                  />
-                </View>
-              ),
-            }}
-          >
-            {({ navigation }) => (
-              <Emoji
-                ref={ref}
-                navigation={navigation}
-                isDark={isDark}
-                theme={paperTheme}
-              />
-            )}
-          </Stack.Screen>
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+          {() => <CreateScreen ref={ref} />}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }

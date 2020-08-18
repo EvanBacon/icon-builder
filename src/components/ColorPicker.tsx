@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import tinycolor from "tinycolor2";
+import { useTheme } from "@react-navigation/native";
 
 export const toState = (data, oldHue) => {
   const color = data.hex ? tinycolor(data.hex) : tinycolor(data);
@@ -78,12 +79,14 @@ function ColorView({ isDark, size, color, style }) {
 
 export function ColorPicker({
   isMobile,
-  isDark,
   onValueChanged,
-  style,
-  contentContainerStyle,
-  horizontal,
+  ...props
+}: React.ComponentProps<typeof ScrollView> & {
+  isMobile?: boolean;
+  onValueChanged: (hex: string) => void;
 }) {
+  const theme = useTheme();
+  const isDark = theme.dark;
   const [text, onTextChanged] = React.useState("FFFFFF");
 
   const COLOR_SIZE = 24;
@@ -92,11 +95,12 @@ export function ColorPicker({
   const COLORS = React.useMemo(() => defaultColors.reverse(), []);
   return (
     <ScrollView
+      {...props}
       style={[
         isMobile
           ? { minHeight: SCROLL_HEIGHT, maxHeight: SCROLL_HEIGHT }
           : { flexShrink: 1, flexGrow: 0, maxWidth: 300 },
-        style,
+        props.style,
       ]}
       contentContainerStyle={[
         { paddingVertical: PADDING },
@@ -105,7 +109,7 @@ export function ColorPicker({
           flexDirection: "row",
           flexWrap: "wrap",
         },
-        contentContainerStyle,
+        props.contentContainerStyle,
       ]}
       horizontal={isMobile}
       pagingEnabled
