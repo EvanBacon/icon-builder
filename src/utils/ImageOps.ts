@@ -72,9 +72,9 @@ export async function createAppIcon({
   return canvas.toDataURL();
 }
 
-// twemoji.maxcdn.com
+// cdnjs.cloudflare.com/ajax/libs/twemoji/15.1.0
 export function twitterEmoji(id: string): string {
-  return `https://twemoji.maxcdn.com/v/latest/svg/${id}.svg`;
+  return `https://cdnjs.cloudflare.com/ajax/libs/twemoji/15.1.0/svg/${id}.svg`;
 }
 
 function imageUriToBase64(imageUri: string): string {
